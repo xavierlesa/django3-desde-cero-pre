@@ -58,6 +58,7 @@ Para el proyecto solo vamos a usar lo básico:
 
 - Django v3
 - Pillow v7
+- psycopg2-binary (el driver binario para conecaar a postgres)
 
 Estas dependencias las agregamos al archivo `requirements.txt` y nos va a quedar así:
 
@@ -65,6 +66,7 @@ Estas dependencias las agregamos al archivo `requirements.txt` y nos va a quedar
 # requirements.txt
 django<3.2,>=3.0.0
 Pillow<7.1,>=7.0.0
+psycopg2-binary>=2.8,<3
 ```
 
 Esto es todo, y al momento de hacer el `build` las dependencias se van a instalar desde 
@@ -81,7 +83,8 @@ Para verificar podemos ejecutar:
 
 ### 3. Start project (manage.py startproject)
 
-Ya tenemos todo listo para crear el proyecto de Django, para esto tenemos que inciar el container con la imagen que creamos, y con el container corriendo ejecutar el comando `django-admin`.
+Ya tenemos todo listo para crear el proyecto de Django, para esto tenemos que inciar el container
+con la imagen que creamos, y con el container corriendo ejecutar el comando `django-admin`.
 
 ```bash
 > docker-compose run portfolio_app ls -al
@@ -218,6 +221,99 @@ archivos necesarios de la app.
 
 ### 6. Codeando models, views, urls, admin
 
+Ya tenemos todo listo para comenzar a codear ✨
+
+Pero antes de codear vamos a definir un poco el modelo del portfolio.
+
+#### El portfolio
+
+Cada proyecto debería tener como mínimo:
+
+- Imagen
+- Título
+- Descrición breve
+- Descrición completa
+- Estado (en progreso, terminado)
+- Tags
+
+Y las "vistas":
+
+- Listado de proyectos
+- Una interna con la información detallada del proyecto
+- Listado agrupado por tags
+
+
+#### Models
+
+
+Vamos a crear solo dos `models` (sí es bien básica nuestra app) uno para `projects` y otro para `tags`.
+
+
+```python
+class Project(models.Model):
+    STATUS_COMPLETED = 'completed'
+    STATUS_IN_PROGRESS = 'in_progress'
+    STATUS_DEPRECATED = 'deprecated'
+    STATUS_CHOICES = (
+            (STATUS_COMPLETED, 'Completado'),
+            (STATUS_IN_PROGRESS, 'En Progreso'),
+            (STATUS_DEPRECATED, 'Abandonado'),
+        )
+
+    title = models.CharField(
+            verbose_name='Proyecto',
+            max_length=100
+        )
+
+    short_description = models.CharField(
+            verbose_name='Descripción corta',
+            max_length=500
+        )
+
+    full_description = models.TextField(
+            verbose_name='Descripción'
+        )
+
+    image = models.ImageField(
+            verbose_name='Imagen',
+            upload_to='projects/'
+        )
+
+    status = models.CharField(
+            verbose_name='Estado',
+            max_length=10,
+            choices=STATUS_CHOICES,
+            default=STATUS_IN_PROGRESS
+        )
+
+
+    start_date = models.DateField(
+            verbose_name='Fecha de incio'
+        )
+
+    end_date = models.DateField(
+            verbose_name='Fecha de entrega',
+            blank=True,
+            null=True
+        )
+
+    tags = models.ManyToManyField('Tag')
+
+    class Meta:
+        verbose_name = 'Proyecto'
+        verbose_name_plural = 'Proyectos'
+        ordering = ('-end_date', 'status')
+
+    def __str__(self):
+        return self.title
+```
+
+
+
+
+
+
 ### 7. Templating (desde un template ya armado)
 
 ### 6. git push
+
