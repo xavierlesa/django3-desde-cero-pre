@@ -250,6 +250,9 @@ Vamos a crear solo dos `models` (sí es bien básica nuestra app) uno para `proj
 
 
 ```python
+# portfolio/models.py
+from django.db import models
+
 class Project(models.Model):
     STATUS_COMPLETED = 'completed'
     STATUS_IN_PROGRESS = 'in_progress'
@@ -281,7 +284,7 @@ class Project(models.Model):
 
     status = models.CharField(
             verbose_name='Estado',
-            max_length=10,
+            max_length=20,
             choices=STATUS_CHOICES,
             default=STATUS_IN_PROGRESS
         )
@@ -306,11 +309,70 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+        
+
+class Tag(models.Model):
+    name = models.CharField(
+        verbose_name='Nombre',
+        max_length=100,
+        unique=True
+    )
+
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+
+    def __str__(self):
+        return self.name
+```
+
+Estos modelos son suficiente para este proyecto demo y minimalista, aunque claro que se 
+puede extender hasta donde quieras.
+
+Solo nos queda instalar nuestra app en `settings` y ejecutar una migración.
+
+```diff
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
++    'portfolio.apps.PortfolioConfig',
+]
+```
+
+```bash
+# creamos la migration
+> docker-compose exec portfolio_app python manage.py makemigrations
+# ejecutamos la migration
+> docker-compose exec portfolio_app python manage.py migrate
 ```
 
 
+#### Admin
 
+Nuestros modelos nos son accesibles aun en el Administrador porque no los registramos, así
+que vamos a registrar la app y los models al admin.
 
+```python
+# portfolio/admin.py
+from django.contrib import admin
+from .models import Project, Tag
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('title', 'status', 'tag_list')
+
+    def tag_list(self, obj):
+        return ", ".join(obj.tags.all().values_list('name', flat=True))
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+```
 
 
 ### 7. Templating (desde un template ya armado)

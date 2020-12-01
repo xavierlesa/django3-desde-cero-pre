@@ -31,7 +31,7 @@ class Project(models.Model):
 
     status = models.CharField(
             verbose_name='Estado',
-            max_length=10,
+            max_length=20,
             choices=STATUS_CHOICES,
             default=STATUS_IN_PROGRESS
         )
@@ -56,3 +56,18 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Tag(models.Model):
+    name = models.CharField(
+        verbose_name='Nombre',
+        max_length=100,
+        unique=True
+    )
+
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+
+    def __str__(self):
+        return self.name
