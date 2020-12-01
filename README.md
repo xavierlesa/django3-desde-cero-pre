@@ -252,6 +252,7 @@ Vamos a crear solo dos `models` (sí es bien básica nuestra app) uno para `proj
 ```python
 # portfolio/models.py
 from django.db import models
+from django.utils.text import sligify
 
 class Project(models.Model):
     STATUS_COMPLETED = 'completed'
@@ -302,6 +303,8 @@ class Project(models.Model):
 
     tags = models.ManyToManyField('Tag')
 
+    slug = models.SlugField(blank=True)
+
     class Meta:
         verbose_name = 'Proyecto'
         verbose_name_plural = 'Proyectos'
@@ -309,6 +312,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, **kwargs):
+        self.slug = slugify(self.title)
+        return super().save(**kwargs)
         
 
 class Tag(models.Model):
@@ -317,6 +324,8 @@ class Tag(models.Model):
         max_length=100,
         unique=True
     )
+    
+    slug = models.SlugField(blank=True)
 
     class Meta:
         verbose_name = 'Tag'
@@ -324,6 +333,10 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, **kwargs):
+        self.slug = slugify(self.name)
+        return super().save(**kwargs)
 ```
 
 Estos modelos son suficiente para este proyecto demo y minimalista, aunque claro que se 
@@ -373,6 +386,11 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
 ```
+
+
+#### URLs & Views
+
+Una de las ventajas de las URLs de Django3 es que están _encapsuladas_ en 
 
 
 ### 7. Templating (desde un template ya armado)

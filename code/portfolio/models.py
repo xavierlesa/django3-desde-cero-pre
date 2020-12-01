@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 class Project(models.Model):
     STATUS_COMPLETED = 'completed'
@@ -49,6 +50,8 @@ class Project(models.Model):
 
     tags = models.ManyToManyField('Tag')
 
+    slug = models.SlugField(blank=True)
+
     class Meta:
         verbose_name = 'Proyecto'
         verbose_name_plural = 'Proyectos'
@@ -56,6 +59,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, **kwargs):
+        self.slug = slugify(self.title)
+        return super().save(**kwargs)
 
 
 class Tag(models.Model):
@@ -65,9 +72,15 @@ class Tag(models.Model):
         unique=True
     )
 
+    slug = models.SlugField(blank=True)
+
     class Meta:
         verbose_name = 'Tag'
         verbose_name_plural = 'Tags'
 
     def __str__(self):
         return self.name
+
+    def save(self, **kwargs):
+        self.slug = slugify(self.name)
+        return super().save(**kwargs)
