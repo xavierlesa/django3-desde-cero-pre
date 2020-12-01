@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ object.title }} - {{ block.super }} ✨✨{% endblock %}
+{% block main %}
+{# aquí listamos los proyectos #}
+<div class="columns is-centered">
+    <div class="column is-8">
+        <div class="card">
+            <div class="card-image">
+                <figure class="image">
+                    <img src="{{ object.image.url }}" alt="{{ object.title }}" />
+                </figure>
+            </div>
+            <div class="card-content">
+                 <div class="content">
+                     {% if request.user.is_authenticated %}<a href="{% url 'admin:portfolio_project_change' object.id %}">Editar</a>{% endif %}
+
+                     <p class="title is-3">
+                         {{ object.title }}
+                     </p>
+
+                     <div class="tags has-addons">
+                        <span class="tag is-dark">Estado</span>
+                        <span class="tag is-{% if object.status == 'completed' %}success{% elif object.status == 'deprecated' %}light{% else %}warning{% endif %}">{{ object.get_status_display }}</span>
+                     </div>
+
+                     <p>
+                         {{ object.full_description|safe }}
+                     </p>
+
+                     <p class="subtitle is-5">
+                         Ver proyectos con tags similares
+                     </p>
+                     <p>
+                         {% for tag in object.tags.all %}
+                             <a href="{% url 'project_filter_list' tag.slug %}">
+                                 <span class="tag is-dark">{{ tag.name }}</span>
+                             </a>
+                         {% endfor %}
+                     </p>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}

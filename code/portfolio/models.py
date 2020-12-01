@@ -6,9 +6,9 @@ class Project(models.Model):
     STATUS_IN_PROGRESS = 'in_progress'
     STATUS_DEPRECATED = 'deprecated'
     STATUS_CHOICES = (
-            (STATUS_COMPLETED, 'Completado'),
-            (STATUS_IN_PROGRESS, 'En Progreso'),
-            (STATUS_DEPRECATED, 'Abandonado'),
+            (STATUS_COMPLETED, 'Completado 💪'),
+            (STATUS_IN_PROGRESS, 'En Progreso 🔨'),
+            (STATUS_DEPRECATED, 'Abandonado 🤖'),
         )
 
     title = models.CharField(

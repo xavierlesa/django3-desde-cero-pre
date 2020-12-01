@@ -58,7 +58,7 @@ Para el proyecto solo vamos a usar lo básico:
 
 - Django v3
 - Pillow v7
-- psycopg2-binary (el driver binario para conecaar a postgres)
+- psycopg2-binary (el driver binario para conectar a postgres)
 
 Estas dependencias las agregamos al archivo `requirements.txt` y nos va a quedar así:
 
@@ -153,6 +153,37 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_ROOT = BASE_DIR / 'media'
+```
+
+
+#### Paths y templates
+
+Para los templates vamos a crear una carpeta `temapltes` y configurar el path 
+`templates`, así:
+
+
+```diff
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+-        'DIRS': [],
++        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+```
+
+```bash
+> mkdir -p templates/portfolio
 ```
 
 
@@ -390,8 +421,26 @@ class TagAdmin(admin.ModelAdmin):
 
 #### URLs & Views
 
-Una de las ventajas de las URLs de Django3 es que están _encapsuladas_ en 
+Una de las ventajas de las URLs de Django es que están _encapsuladas_ en `path` y `re_path`.
+Es decir que podemos usar tanto expresiones regulares como path pre definidos ej: 
+`int`, `str`, `slug`, `uuid` y `path`.
+En nuestra app solo vamos a usar `slug` ya que queremos que los proyectos sean __URL friendly__ y 
+podamos generar URL legibles.
 
+Vamos a definir las siguientes URLs:
+
+```diff
+# portfolio_app/urls.py
+urlpatterns = [
+    path('admin/', admin.site.urls),
++
++    path('', views.project_list, name='project_list'),
++    path('<slug:slug>', views.project_detail, name='project_detail'),
++    path('tag/<slug:tag>', views.project_filter_list, name='project_filter_list'),
+]
+```
+
+Lo vamos a dejar en `portfolio/urls.py` ya que queremos que quede dentro del scope de la app, solo para que quede ordenado, y luego lo incluimos en las URLs del project.
 
 ### 7. Templating (desde un template ya armado)
 

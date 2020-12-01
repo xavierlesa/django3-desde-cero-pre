@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block main %}
+{# aquí listamos los proyectos #}
+<div class="columns">
+{% for object in objects %}
+    <div class="column is-3">
+        <div class="card">
+            <div class="card-image">
+                <figure class="image">
+                    <img src="{{ object.image.url }}" alt="{{ object.title }}" />
+                </figure>
+            </div>
+            <div class="card-content">
+                 <div class="content">
+                     <p class="title is-4">
+                         <a href="{% url 'project_detail' object.slug %}">{{ object.title }}</a>
+                     </p>
+                     <p>
+                         {% for tag in object.tags.all %}
+                             <a href="{% url 'project_filter_list' tag.slug %}">
+                                 <span class="tag is-dark">{{ tag.name }}</span>
+                             </a>
+                         {% endfor %}
+                     </p>
+                     <p>
+                         {{ object.short_description|safe }}
+                     </p>
+                     <a href="{% url 'project_detail' object.slug %}" class="button is-info is-light is-fullwidth">Ver más</a>
+                 </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock main %}
