@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  # django app
+  portfolio_app:
+    restart: unless-stopped
+    image: portfolio_app
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./code:/code
+    ports:
+      - 8000:8000
+		depends_on:
+      - db
+
+  # database
+  db:
+    restart: unless-stopped
+    image: postgres:12-alpine
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    expose:
+      - 5432
