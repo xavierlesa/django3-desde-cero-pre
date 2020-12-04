@@ -440,9 +440,77 @@ urlpatterns = [
 ]
 ```
 
-Lo vamos a dejar en `portfolio/urls.py` ya que queremos que quede dentro del scope de la app, solo para que quede ordenado, y luego lo incluimos en las URLs del project.
+Las vistas son bastante simples, solo tenes tres:
+
+- listado de proyectos
+- destalle de un proyecto
+- listado filtrando por tags
+
+
+```python
+# portfolio/views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Project
+
+
+def project_list(request):
+    qs = Project.objects.all()
+    return render(request, 'portfolio/list.html', {
+        'objects': qs
+    })
+
+
+def project_detail(request, slug=None):
+    qs = get_object_or_404(Project, slug=slug)
+    return render(request, 'portfolio/detail.html', {
+        'object': qs
+    })
+
+
+def project_filter_list(request, tag=None):
+    qs = Project.objects.filter(tags__slug__in=[tag])
+    return render(request, 'portfolio/list.html', {
+        'objects': qs
+    })
+
+```
 
 ### 7. Templating (desde un template ya armado)
+
+El template base lo vamos a definir solo con el título y un link para volver al Home.
+
+Luego dentro del `<div class="container">...</div>` creamos el `block` principal `main`.
+
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Portfolio App{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+  </head>
+  <body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+          Mi Portfolio
+      </h1>
+      <p class="subtitle">
+        Este portfolio está construido con <strong>Django3 + Docker</strong>
+      </p>
+      <a href="/">Home</a>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      {% block main %}{% endblock %}
+    </div>
+  </section>
+  </body>
+</html>
+```
 
 ### 6. git push
 
